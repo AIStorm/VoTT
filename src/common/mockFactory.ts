@@ -29,6 +29,7 @@ import { Point2D } from "vott-ct/lib/js/CanvasTools/Core/Point2D";
 import { RegionDataType, RegionData } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
 import { randomIntInRange } from "./utils";
 import * as packageJson from "../../package.json";
+import { IProjectMetricsProps } from "../react/components/pages/projectSettings/projectMetrics";
 
 export default class MockFactory {
 
