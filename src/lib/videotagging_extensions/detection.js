@@ -277,13 +277,28 @@ function Detection(videotagging, visitedFrames) {
 
     this.reviewEndpoint = function (dir, endpoint, cb) {
         console.log(endpoint);
+
+
+
         if (dir) {
-            this.mapDir(detectFrame, dir).then(() => {
+            isLastFrame = function (frameId) {
+                let lastVisitedFrameId = (self.videotagging.imagelist) ? self.videotagging.imagelist.indexOf(Array.from(self.visitedFrames)[Array.from(self.visitedFrames).length -1]) : Math.max.apply(Math, Array.from(visitedFrames));
+                return (frameId <= lastVisitedFrameId);
+            }
+            console.log('MapDir');
+            this.mapDir(detectFrame, dir,isLastFrame).then(() => {
                 cb();
             },(err) => {
                 cb(err);
             });
         } else {
+            isLastFrame = function (frameId) {
+                if(self.videotagging.imagelist){
+                    return (self.videotagging.imageIndex >= self.videotagging.imagelist.length);
+                } else{
+                    return (self.videotagging.video.currentTime + 1 >= self.videotagging.video.duration);
+                }
+            }
             this.mapVideo(detectFrame, "last").then(() => {
                 cb();
             },(err) => {
@@ -294,13 +309,16 @@ function Detection(videotagging, visitedFrames) {
 
         function detectFrame(frameName, frameId, fCanvas, canvasContext, detectCb) {
             // extract img from 
+
             var frame_img =  self.canvasToArrayBuffer(fCanvas, canvasContext, frameId);
+            console.log('POST:', endpoint,' Name:',frameName);
             fetch(endpoint, {
                 method: 'post', body: frame_img, headers: {
                     contentType: "application/octet-stream"
                 }
             }).then(response => response.json()
             ).then((data)=>{
+                console.log('RESULT:',data.classes);
                 //dumb way to do this fix with a promis
                 self.videotagging.optionalTags.createTagControls(Object.keys(data.classes));
                 self.videotagging.frames[frameId] = [];

@@ -143,10 +143,15 @@ ipcRenderer.on('review-model', (event, reviewModelConfig) => {
 
 ipcRenderer.on('review-model-endpoint', (event, reviewModelConfig) => {
     addLoader();
-    detection.reviewEndpoint( videotagging.imagelist, reviewModelConfig.endpoint, (err) => {
+    let imagePaths;
+    if(videotagging.imagelist){
+           imagePaths = videotagging.imagelist.map((filepath) => path.join(videotagging.sourceDir,filepath))
+        }
+    detection.reviewEndpoint(imagePaths, reviewModelConfig.endpoint, (err) => {
       if (err){
         alert(`An error occured with Remote Active Learning \n Please check the debug console for more information.`);
       }
+
       if(!videotagging.imagelist){
         videotagging.video.oncanplay = updateVisitedFrames;
       }      
@@ -637,6 +642,7 @@ function save() {
     var saveLock;
     if (!saveLock) {
       saveLock = true;
+      console.log("FILE SAVE:",`${videotagging.src}.json`)
       fs.writeFile(`${videotagging.src}.json`, JSON.stringify(saveObject), () => {
         saveState = JSON.stringify(saveObject);
         console.log("saved");
