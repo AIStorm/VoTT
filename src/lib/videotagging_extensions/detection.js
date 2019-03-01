@@ -305,12 +305,13 @@ function Detection(videotagging, visitedFrames) {
                 cb(err);
             });
         }
-        self.videotagging.frames = {};
+        //self.videotagging.frames = {};
 
         function detectFrame(frameName, frameId, fCanvas, canvasContext, detectCb) {
             // extract img from 
 
-            var frame_img =  self.canvasToArrayBuffer(fCanvas, canvasContext, frameId);
+            // var frame_img =  self.canvasToArrayBuffer(fCanvas, canvasContext, frameId);
+            var frame_img =  self.canvasToArrayBuffer(fCanvas, canvasContext, frameName);
             console.log('POST:', endpoint,' Name:',frameName);
             fetch(endpoint, {
                 method: 'post', body: frame_img, headers: {
@@ -321,9 +322,12 @@ function Detection(videotagging, visitedFrames) {
                 console.log('RESULT:',data.classes);
                 //dumb way to do this fix with a promis
                 self.videotagging.optionalTags.createTagControls(Object.keys(data.classes));
-                self.videotagging.frames[frameId] = [];
-                data.frames[`${frameId}.jpg`].regions.forEach((region) => {
-                    self.videotagging.frames[frameId].push({
+                //self.videotagging.frames[frameId] = [];
+                self.videotagging.frames[frameName] = [];
+                //data.frames[`${frameId}.jpg`].regions.forEach((region) => {
+                data.frames[frameName].regions.forEach((region) => {
+                    //self.videotagging.frames[frameId].push({
+                    self.videotagging.frames[frameName].push({
                         x1: region.x1,
                         y1: region.y1,
                         x2: region.x2,
@@ -333,7 +337,8 @@ function Detection(videotagging, visitedFrames) {
                         height: fCanvas.height,
                         type: self.videotagging.regiontype,
                         tags: Object.keys(data.classes).filter((key) => { return data.classes[key] === region.class }),
-                        name: (self.videotagging.frames[frameId].length + 1),
+                        //name: (self.videotagging.frames[frameId].length + 1),
+                        name: (self.videotagging.frames[frameName].length + 1),
                         blockSuggest: true,
                     });
                     self.videotagging.showAllRegions();

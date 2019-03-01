@@ -20,6 +20,7 @@ ipcRenderer.on('configs', (event, configs) => {
             $('#remote-group').show();
             $('#output-group').hide();
             $('#model-group').hide();
+            $('#endpoint').val("http://localhost/cntk")
         } else{
             $('#remote-group').hide();
             $('#output-group').show();
